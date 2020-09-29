@@ -22,6 +22,7 @@ pipeline {
       steps {
         dir('Terraform/Dev') {
           sh('gcloud secrets versions access latest --secret=service_acc_key > account.json')
+          sh('terraform plan')
           sh('terraform init')
           sh('terraform apply -auto-approve')
         }
