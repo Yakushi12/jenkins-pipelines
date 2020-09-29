@@ -1,0 +1,37 @@
+pipeline {
+
+  agent {
+      label 'master'
+  }
+
+  options {
+      ansiColor('xterm')
+  }
+
+  stages {
+    stage('clone code') {
+      steps {
+        script {
+          git credentialsId: 'GH_private_key',
+          branch: 'fix',
+          url: 'git@github.com:Yakushi12/jenkins-automatization-docker.git';
+        }
+      }
+    }
+    stage('Create Packer AMI') {
+      steps {
+        dir('Terraform/Dev') {
+          sh('gcloud secrets versions access latest --secret=service_acc_key > account.json')
+          sh('terraform init')
+          sh('terraform apply -auto-approve')
+        }
+      }
+    }
+  }
+
+  post {
+    cleanup {
+      cleanWs()
+    }
+  }
+}
