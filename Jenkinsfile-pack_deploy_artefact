@@ -29,7 +29,7 @@ pipeline {
           
           env.GIT_PETCLINIC_COMMIT = sh(
               returnStdout: true,
-              script: "git log --pretty="%h" -1"
+              script: "git log --pretty=%h -1"
               ).trim();
         }
       }
