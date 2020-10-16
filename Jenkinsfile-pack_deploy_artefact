@@ -1,57 +1,57 @@
 pipeline {
 
   agent {
-      label 'master'
+      label "master"
   }
 
   options {
-      ansiColor('xterm')
+      ansiColor("xterm")
   }
 
   tools {
-      maven 'Maven'
+      maven "Maven"
   }
 
   environment {
-    NEXUS_VERSION = 'nexus3'
-    NEXUS_PROTOCOL = 'http'
-    NEXUS_REPOSITORY = 'maven-snapshots'
-    NEXUS_CREDENTIAL_ID = 'nexus-cred'
+    NEXUS_VERSION = "nexus3"
+    NEXUS_PROTOCOL = "http"
+    NEXUS_REPOSITORY = "maven-snapshots"
+    NEXUS_CREDENTIAL_ID = "nexus-cred"
   }
 
   stages {
-    stage('clone code') {
+    stage("clone code") {
       steps {
         script {
-          git credentialsId: 'GH_private_key',
-          branch: 'main',
-          url: 'git@github.com:Yakushi12/spring-petclinic.git';
+          git credentialsId: "GH_private_key",
+          branch: "main",
+          url: "git@github.com:Yakushi12/spring-petclinic.git";
           
           env.GIT_PETCLINIC_COMMIT = sh(
               returnStdout: true,
-              script: 'git log --pretty="%h" -1'
+              script: "git log --pretty="%h" -1"
               ).trim();
         }
       }
     }
-    stage('mvn build') {
+    stage("mvn build") {
       steps {
         script {
-          sh 'mvn package -DskipTests=true'
+          sh "mvn package -DskipTests=true"
         }
       }
     }
-    stage('get nexus ip') {
+    stage("get nexus ip") {
       steps {
         script {
           env.NEXUS_IP = sh (
-            script: 'gcloud secrets versions access latest --secret=nexus_ip_dz',
+            script: "gcloud secrets versions access latest --secret=nexus_ip_dz",
             returnStdout: true
           ).trim();
         }
       }
     }
-    stage('publish to nexus') {
+    stage("publish to nexus") {
       steps {
         script {
           // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
@@ -93,9 +93,9 @@ pipeline {
         }
       }
     }
-    stage('downstream') {
+    stage("downstream") {
       steps {
-        build(job: 'packer_build', parameters: [[$class: 'StringParameterValue', name: 'GIT_PETCLINIC_COMMIT', value: '${env.GIT_PETCLINIC_COMMIT}']])
+        build(job: "packer_build", parameters: [[$class: "StringParameterValue", name: "GIT_PETCLINIC_COMMIT", value: "${env.GIT_PETCLINIC_COMMIT}"]])
       }
     }
   }
