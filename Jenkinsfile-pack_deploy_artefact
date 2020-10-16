@@ -26,6 +26,11 @@ pipeline {
           git credentialsId: 'GH_private_key',
           branch: 'main',
           url: 'git@github.com:Yakushi12/spring-petclinic.git';
+          
+          env.GIT_PETCLINIC_COMMIT = sh(
+              returnStdout: true,
+              script: 'git log --pretty="%h" -1'
+              ).trim();
         }
       }
     }
@@ -85,16 +90,6 @@ pipeline {
           } else {
             error "*** File: ${artifactPath}, could not be found";
           }
-        }
-      }
-    }
-    stage('get git commit id') {
-      steps {
-        script {
-          env.GIT_PETCLINIC_COMMIT = sh(
-              returnStdout: true,
-              script: 'git log --pretty="%h" -1'
-              ).trim();
         }
       }
     }
