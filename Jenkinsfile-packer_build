@@ -41,7 +41,7 @@ pipeline {
           -var \'path=${PASS}\' \
           -var \'acc_key=account.json\' \
           -var \'nexus_url=${NEXUS_IP}\' \
-          -var \'commit_id=${GIT_COMMIT}\' \
+          -var \'commit_id=${GIT_PETCLINIC_COMMIT}\' \
           pet_centos7.json
           """
         }
